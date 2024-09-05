@@ -1,0 +1,18 @@
+{
+  "chapters": [
+    {
+      "chapter": 1,
+      "images": [
+        "https://komikcast.cz/image1.jpg",
+        "https://komikcast.cz/image2.jpg"
+      ]
+    },
+    {
+      "chapter": 2,
+      "images": [
+        "https://komikcast.cz/image3.jpg",
+        "https://komikcast.cz/image4.jpg"
+      ]
+    }
+  ]
+}
