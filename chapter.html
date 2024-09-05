@@ -3,32 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chapter</title>
+    <title>Chapter Viewer</title>
     <script>
         async function loadChapter() {
-            const chapterNumber = window.location.hash.substring(1); // Get chapter from hash
+            // Mendapatkan hash dari URL untuk menentukan chapter
+            const hash = window.location.hash.substring(1);
             const response = await fetch('data.json');
             const data = await response.json();
 
-            const chapterData = data.chapters.find(ch => ch.chapter == chapterNumber);
-            if (chapterData) {
-                document.getElementById('chapter-title').textContent = `Chapter ${chapterNumber}`;
-                const imageContainer = document.getElementById('image-container');
-                chapterData.images.forEach(imageUrl => {
-                    const img = document.createElement('img');
-                    img.src = imageUrl;
-                    img.alt = `Chapter ${chapterNumber} Image`;
-                    img.style.width = '100%';
-                    imageContainer.appendChild(img);
-                });
-            } else {
-                document.getElementById('chapter-title').textContent = 'Chapter Not Found';
+            // Cari data chapter sesuai dengan hash
+            const chapterData = data.chapters.find(chapter => chapter.chapter === hash);
+
+            if (!chapterData) {
+                document.body.innerHTML = '<h1>Chapter not found</h1>';
+                return;
+            }
+
+            const chapterContainer = document.getElementById('chapter-container');
+
+            // URL template
+            const baseUrl = "https://sv_.imgkc_.my.id/wp-content/img/T/Tsue-to-Tsurugi-no-Wistoria/";
+            const chapterFolder = chapterData.chapter.padStart(5, '0'); // Format chapter
+            const imageCount = chapterData.imageCount;
+
+            // Generate images based on imageCount
+            for (let i = 0; i < imageCount; i++) {
+                const imageUrl = `${baseUrl}${chapterFolder}/${i.toString().padStart(3, '0')}.jpg`;
+
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = `Chapter ${chapterData.chapter} - Page ${i + 1}`;
+                img.style.display = 'block'; // Menampilkan satu per satu gambar
+                img.style.width = '100%'; // Sesuaikan ukuran gambar
+
+                chapterContainer.appendChild(img);
             }
         }
     </script>
 </head>
 <body onload="loadChapter()">
-    <h1 id="chapter-title">Chapter</h1>
-    <div id="image-container"></div>
+    <h1>Chapter Viewer</h1>
+    <div id="chapter-container"></div>
 </body>
 </html>
