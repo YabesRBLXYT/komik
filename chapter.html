@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter</title>
+    <script>
+        async function loadChapter() {
+            const chapterNumber = window.location.hash.substring(1); // Get chapter from hash
+            const response = await fetch('data.json');
+            const data = await response.json();
+
+            const chapterData = data.chapters.find(ch => ch.chapter == chapterNumber);
+            if (chapterData) {
+                document.getElementById('chapter-title').textContent = `Chapter ${chapterNumber}`;
+                const imageContainer = document.getElementById('image-container');
+                chapterData.images.forEach(imageUrl => {
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = `Chapter ${chapterNumber} Image`;
+                    img.style.width = '100%';
+                    imageContainer.appendChild(img);
+                });
+            } else {
+                document.getElementById('chapter-title').textContent = 'Chapter Not Found';
+            }
+        }
+    </script>
+</head>
+<body onload="loadChapter()">
+    <h1 id="chapter-title">Chapter</h1>
+    <div id="image-container"></div>
+</body>
+</html>
