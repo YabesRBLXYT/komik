@@ -1,18 +1,13 @@
 {
   "chapters": [
     {
-      "chapter": 1,
-      "images": [
-        "https://cdn.komiku.id/wp-content/uploads/2359168-1.jpg",
-        "https://cdn.komiku.id/wp-content/uploads/2359168-2.jpg"
-      ]
+      "chapter": "01.1",
+      "imageCount": 32
     },
     {
-      "chapter": 2,
-      "images": [
-        "https://komikcast.cz/image3.jpg",
-        "https://komikcast.cz/image4.jpg"
-      ]
+      "chapter": "02.1",
+      "imageCount": 25
     }
+    // Tambahkan chapter lainnya
   ]
 }
