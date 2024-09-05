@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komik Chapters</title>
+    <script>
+        async function loadChapters() {
+            const response = await fetch('data.json');
+            const data = await response.json();
+
+            const chapterList = document.getElementById('chapter-list');
+            data.chapters.forEach(chapter => {
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = `chapter.html#${chapter.chapter}`;
+                link.textContent = `Chapter ${chapter.chapter}`;
+                listItem.appendChild(link);
+                chapterList.appendChild(listItem);
+            });
+        }
+    </script>
+</head>
+<body onload="loadChapters()">
+    <h1>Daftar Chapter</h1>
+    <ul id="chapter-list"></ul>
+</body>
+</html>
