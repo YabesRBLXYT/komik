@@ -2,8 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Chapter Viewer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f4f4f4;
+        }
+        
+        #image-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%; /* agar lebar sesuai layar */
+        }
+
+        img {
+            max-width: 100%; /* gambar disesuaikan agar tidak lebih lebar dari layar */
+            height: auto; /* menjaga aspek rasio gambar */
+            margin-bottom: 10px; /* sedikit jarak antar gambar */
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        @media only screen and (max-width: 600px) {
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
     <script>
         async function loadChapter() {
             const hash = window.location.hash.substring(1); // Ambil hash dari URL
