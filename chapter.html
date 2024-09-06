@@ -5,59 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chapter Viewer</title>
     <script>
-        async function checkImageExists(url) {
-            try {
-                const response = await fetch(url);
-                return response.ok; // true jika 200, false jika 404 atau error lainnya
-            } catch (error) {
-                return false; // Tangani jika ada error dalam fetching
+        async function loadChapter() {
+            const hash = window.location.hash.substring(1); // Ambil hash dari URL
+            const chapterNumber = hash.split(".")[0].padStart(3, '0'); // Ekstrak nomor chapter
+            const subChapter = hash.split(".")[1] || ""; // Ambil sub-chapter jika ada
+            const serverNumber = parseInt(chapterNumber) % 51 + 1; // Server antara 1-51
+            const chapterPath = `${chapterNumber}${subChapter ? '.' + subChapter : ''}`;
+
+            const imageContainer = document.getElementById('image-container');
+            let imageFound = false;
+
+            // Coba menampilkan gambar dari 000 sampai yang tidak ditemukan (404)
+            for (let i = 0; i < 100; i++) {
+                const imageUrl = `https://sv${serverNumber}.imgkc${serverNumber}.my.id/wp-content/img/T/Tsue-to-Tsurugi-no-Wistoria/${chapterPath}/${i.toString().padStart(3, '0')}.jpg`;
+
+                const img = document.createElement('img');
+                img.src = imageUrl;
+
+                // Cek apakah gambar ada
+                await checkImage(img.src)
+                    .then(() => {
+                        imageContainer.appendChild(img); // Jika gambar ada, tambahkan ke container
+                        imageFound = true;
+                    })
+                    .catch(() => {
+                        if (!imageFound) {
+                            console.log("No more images found.");
+                        }
+                    });
+
+                if (!imageFound) break; // Hentikan loop jika tidak ada gambar lagi
             }
         }
 
-        async function loadChapter() {
-            // Mendapatkan hash dari URL untuk menentukan chapter
-            const hash = window.location.hash.substring(1);
-
-            const chapterContainer = document.getElementById('chapter-container');
-            chapterContainer.innerHTML = `<h2>Loading chapter ${hash}...</h2>`;
-
-            const baseUrl = `https://sv1.imgkc1.my.id/wp-content/img/T/Tsue-to-Tsurugi-no-Wistoria/`;
-            const chapterFolder = hash.padStart(5, '0'); // Format chapter (misal: 01.1 -> 01.1)
-            
-            let page = 0; // Awal dari gambar 000
-
-            // Loop terus sampai gambar tidak ditemukan
-            while (true) {
-                const imageUrl = `${baseUrl}${chapterFolder}/${page.toString().padStart(3, '0')}.jpg`;
-                
-                // Cek apakah gambar ada
-                const imageExists = await checkImageExists(imageUrl);
-                if (!imageExists) {
-                    break; // Hentikan loop jika gambar tidak ditemukan (404)
-                }
-
-                // Buat elemen gambar jika ditemukan
-                const img = document.createElement('img');
-                img.src = imageUrl;
-                img.alt = `Chapter ${hash} - Page ${page + 1}`;
-                img.style.display = 'block'; // Menampilkan satu per satu gambar
-                img.style.width = '100%'; // Sesuaikan ukuran gambar
-
-                chapterContainer.appendChild(img);
-
-                page++; // Lanjut ke gambar berikutnya
-            }
-
-            if (page === 0) {
-                chapterContainer.innerHTML = `<h2>No images found for chapter ${hash}</h2>`;
-            } else {
-                chapterContainer.innerHTML += `<h2>End of Chapter ${hash}</h2>`;
-            }
+        // Fungsi untuk mengecek jika gambar ada (tidak 404)
+        function checkImage(url) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(url);
+                img.onerror = () => reject(url);
+                img.src = url;
+            });
         }
     </script>
 </head>
 <body onload="loadChapter()">
     <h1>Chapter Viewer</h1>
-    <div id="chapter-container"></div>
+    <div id="image-container"></div>
 </body>
 </html>
