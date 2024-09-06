@@ -73,15 +73,17 @@
     <script>
         async function loadChapter() {
             const hash = window.location.hash.substring(1); // Ambil hash dari URL
-            const chapterNumber = hash.split(".")[0].padStart(3, '0'); // Ekstrak nomor chapter
-            const subChapter = hash.split(".")[1] || ""; // Ambil sub-chapter jika ada
-            const serverNumber = parseInt(chapterNumber) % 51 + 1; // Server antara 1-51
-            const chapterPath = `${chapterNumber}${subChapter ? '.' + subChapter : ''}`;
+            if (!hash) {
+                console.error("No chapter found in the URL.");
+                return;
+            }
 
+            const chapterPath = hash.split(".")[0].padStart(3, '0') + (hash.split(".")[1] ? '.' + hash.split(".")[1] : ''); // Chapter path
+            const serverNumber = (parseInt(chapterPath.split(".")[0]) % 51) + 1; // Server number between 1-51
             const imageContainer = document.getElementById('image-container');
-            let imageFound = false;
+            imageContainer.innerHTML = ''; // Clear any existing images
 
-            // Coba menampilkan gambar dari 000 sampai yang tidak ditemukan (404)
+            let imageFound = false;
             for (let i = 0; i < 100; i++) {
                 const imageUrl = `https://sv${serverNumber}.imgkc${serverNumber}.my.id/wp-content/img/T/Tsue-to-Tsurugi-no-Wistoria/${chapterPath}/${i.toString().padStart(3, '0')}.jpg`;
 
@@ -95,12 +97,13 @@
                         imageFound = true;
                     })
                     .catch(() => {
-                        if (!imageFound) {
-                            console.log("No more images found.");
+                        if (!imageFound && i === 0) {
+                            console.log("No image found for this chapter.");
                         }
                     });
 
-                if (!imageFound) break; // Hentikan loop jika tidak ada gambar lagi
+                // Jika gambar pertama tidak ditemukan, hentikan loop
+                if (!imageFound) break;
             }
         }
 
@@ -117,28 +120,32 @@
             const response = await fetch('data.json');
             const chapters = await response.json();
             const hash = window.location.hash.substring(1);
-            const currentChapterIndex = chapters.findIndex(ch => ch === hash);
+            const currentChapterIndex = chapters.indexOf(hash);
 
             const prevButton = document.getElementById('prev-chapter');
             const nextButton = document.getElementById('next-chapter');
 
+            // Cek apakah chapter pertama
             if (currentChapterIndex <= 0) {
                 prevButton.disabled = true;
             } else {
                 prevButton.disabled = false;
                 prevButton.onclick = () => {
                     window.location.hash = chapters[currentChapterIndex - 1];
-                    location.reload();
+                    loadChapter(); // Panggil ulang fungsi loadChapter
+                    loadChapterData(); // Update navigasi
                 };
             }
 
+            // Cek apakah chapter terakhir
             if (currentChapterIndex >= chapters.length - 1) {
                 nextButton.disabled = true;
             } else {
                 nextButton.disabled = false;
                 nextButton.onclick = () => {
                     window.location.hash = chapters[currentChapterIndex + 1];
-                    location.reload();
+                    loadChapter(); // Panggil ulang fungsi loadChapter
+                    loadChapterData(); // Update navigasi
                 };
             }
         }
