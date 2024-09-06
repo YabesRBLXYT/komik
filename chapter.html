@@ -14,7 +14,7 @@
             flex-direction: column;
             background-color: #f4f4f4;
         }
-        
+
         #image-container {
             display: flex;
             flex-direction: column;
@@ -26,8 +26,8 @@
         img {
             max-width: 100%;
             height: auto;
-            margin: 0; /* Menghilangkan margin antar gambar */
-            padding: 0; /* Menghilangkan padding antar gambar */
+            margin: 0;
+            padding: 0;
         }
 
         h1 {
@@ -40,16 +40,22 @@
             display: flex;
             justify-content: space-between;
             width: 100%;
-            padding: 10px;
+            max-width: 600px;
+            margin: 10px 0;
         }
 
         button {
             padding: 10px;
             font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
         }
 
         button:disabled {
-            background-color: grey;
+            background-color: #cccccc;
             cursor: not-allowed;
         }
 
@@ -60,12 +66,11 @@
 
             button {
                 font-size: 14px;
+                padding: 8px;
             }
         }
     </style>
     <script>
-        let chapterList = [];
-
         async function loadChapter() {
             const hash = window.location.hash.substring(1); // Ambil hash dari URL
             const chapterNumber = hash.split(".")[0].padStart(3, '0'); // Ekstrak nomor chapter
@@ -75,9 +80,6 @@
 
             const imageContainer = document.getElementById('image-container');
             let imageFound = false;
-
-            // Ganti judul halaman dengan nomor chapter
-            document.querySelector('h1').textContent = `Chapter ${hash}`;
 
             // Coba menampilkan gambar dari 000 sampai yang tidak ditemukan (404)
             for (let i = 0; i < 100; i++) {
@@ -100,12 +102,8 @@
 
                 if (!imageFound) break; // Hentikan loop jika tidak ada gambar lagi
             }
-
-            await loadChapters();
-            updateButtons(hash); // Update tombol Previous dan Next
         }
 
-        // Fungsi untuk mengecek jika gambar ada (tidak 404)
         function checkImage(url) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
@@ -115,56 +113,57 @@
             });
         }
 
-        // Load daftar chapter dari data.json
-        async function loadChapters() {
+        async function loadChapterData() {
             const response = await fetch('data.json');
-            chapterList = await response.json();
-        }
+            const chapters = await response.json();
+            const hash = window.location.hash.substring(1);
+            const currentChapterIndex = chapters.findIndex(ch => ch === hash);
 
-        // Update tombol Previous dan Next berdasarkan chapter saat ini
-        function updateButtons(currentChapter) {
-            const currentIndex = chapterList.findIndex(chapter => chapter === currentChapter);
-            const prevButton = document.getElementById('prevButton');
-            const nextButton = document.getElementById('nextButton');
+            const prevButton = document.getElementById('prev-chapter');
+            const nextButton = document.getElementById('next-chapter');
 
-            // Jika berada di chapter pertama, disable tombol Previous
-            if (currentIndex === 0) {
+            if (currentChapterIndex <= 0) {
                 prevButton.disabled = true;
             } else {
                 prevButton.disabled = false;
                 prevButton.onclick = () => {
-                    window.location.hash = chapterList[currentIndex - 1];
-                    location.reload(); // Muat ulang halaman dengan chapter sebelumnya
+                    window.location.hash = chapters[currentChapterIndex - 1];
+                    location.reload();
                 };
             }
 
-            // Jika berada di chapter terakhir, disable tombol Next
-            if (currentIndex === chapterList.length - 1) {
+            if (currentChapterIndex >= chapters.length - 1) {
                 nextButton.disabled = true;
             } else {
                 nextButton.disabled = false;
                 nextButton.onclick = () => {
-                    window.location.hash = chapterList[currentIndex + 1];
-                    location.reload(); // Muat ulang halaman dengan chapter selanjutnya
+                    window.location.hash = chapters[currentChapterIndex + 1];
+                    location.reload();
                 };
             }
         }
+
+        window.onload = function() {
+            loadChapterData();
+            loadChapter();
+        };
     </script>
 </head>
-<body onload="loadChapter()">
-    <!-- Tombol Navigasi di atas -->
+<body>
+    <h1>Chapter Viewer</h1>
+
+    <!-- Tombol Navigasi Atas -->
     <div id="nav-buttons">
-        <button id="prevButton">Previous Chapter</button>
-        <button id="nextButton">Next Chapter</button>
+        <button id="prev-chapter">Previous Chapter</button>
+        <button id="next-chapter">Next Chapter</button>
     </div>
 
-    <h1>Chapter Viewer</h1>
     <div id="image-container"></div>
 
-    <!-- Tombol Navigasi di bawah -->
+    <!-- Tombol Navigasi Bawah -->
     <div id="nav-buttons">
-        <button id="prevButton">Previous Chapter</button>
-        <button id="nextButton">Next Chapter</button>
+        <button id="prev-chapter">Previous Chapter</button>
+        <button id="next-chapter">Next Chapter</button>
     </div>
 </body>
 </html>
