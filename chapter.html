@@ -76,6 +76,9 @@
             const imageContainer = document.getElementById('image-container');
             let imageFound = false;
 
+            // Ganti judul halaman dengan nomor chapter
+            document.querySelector('h1').textContent = `Chapter ${hash}`;
+
             // Coba menampilkan gambar dari 000 sampai yang tidak ditemukan (404)
             for (let i = 0; i < 100; i++) {
                 const imageUrl = `https://sv${serverNumber}.imgkc${serverNumber}.my.id/wp-content/img/T/Tsue-to-Tsurugi-no-Wistoria/${chapterPath}/${i.toString().padStart(3, '0')}.jpg`;
